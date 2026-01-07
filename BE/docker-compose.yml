@@ -1,0 +1,27 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: todo-postgres
+    ports:
+      - "5400:5432"
+    environment:
+      POSTGRES_DB: todo_db
+      POSTGRES_USER: todo_user
+      POSTGRES_PASSWORD: todo_pass
+    volumes:
+      - todo_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U todo_user -d todo_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+  redis:
+    image: redis:7
+    container_name: todo-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - todo_redis_data:/data
+volumes:
+  todo_pg_data:
+  todo_redis_data:

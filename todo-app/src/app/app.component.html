@@ -1,0 +1,91 @@
+<main class="app">
+  <section class="panel">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">Focus board</p>
+        <h1>{{ title }}</h1>
+        <p class="subhead">Shape the day with a short, punchy list you can actually finish.</p>
+      </div>
+      <div class="stats">
+        <div class="stat">
+          <span class="stat-label">Remaining</span>
+          <span class="stat-value">{{ remainingCount }}</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Total</span>
+          <span class="stat-value">{{ todos.length }}</span>
+        </div>
+      </div>
+    </header>
+
+    <form class="composer" (ngSubmit)="addTodo()">
+      <input
+        type="text"
+        name="task"
+        [(ngModel)]="newTask"
+        placeholder="Add a task that matters most"
+        maxlength="80"
+        autocomplete="off"
+      />
+      <button type="submit">Add</button>
+    </form>
+
+    <div class="filters">
+      <button type="button" [class.active]="filter === 'all'" (click)="filter = 'all'">All</button>
+      <button type="button" [class.active]="filter === 'active'" (click)="filter = 'active'">Active</button>
+      <button type="button" [class.active]="filter === 'done'" (click)="filter = 'done'">Done</button>
+    </div>
+
+    <p class="status" *ngIf="isLoading">Loading tasks...</p>
+    <p class="status error" *ngIf="errorMessage">{{ errorMessage }}</p>
+
+    <ul class="todo-list" *ngIf="visibleTodos.length">
+      <li class="todo-item" *ngFor="let todo of visibleTodos" [class.done]="todo.isCompleted">
+        <button
+          type="button"
+          class="check"
+          (click)="toggleTodo(todo.id)"
+          [attr.aria-pressed]="todo.isCompleted"
+          aria-label="Toggle task"
+        ></button>
+        <div class="todo-body">
+          <span class="todo-title">{{ todo.title }}</span>
+          <span class="todo-meta">Added {{ todo.createdAt | date: 'MMM d, y' }}</span>
+        </div>
+        <button type="button" class="remove" (click)="removeTodo(todo.id)">Remove</button>
+      </li>
+    </ul>
+
+    <div class="empty" *ngIf="!isLoading && !errorMessage && !visibleTodos.length">
+      <p>No tasks here. Add your next move above.</p>
+    </div>
+
+    <div class="footer">
+      <p>{{ remainingCount }} left to finish</p>
+      <button
+        type="button"
+        class="clear"
+        (click)="clearCompleted()"
+        [disabled]="todos.length === remainingCount"
+      >
+        Clear done
+      </button>
+    </div>
+  </section>
+
+  <section class="side">
+    <div class="pulse">
+      <p class="eyebrow">Daily pulse</p>
+      <h2>Three beats that keep momentum.</h2>
+      <ol>
+        <li>Start with one meaningful win.</li>
+        <li>Protect a block of deep focus.</li>
+        <li>Close the day with a clean slate.</li>
+      </ol>
+    </div>
+    <div class="note">
+      <p class="note-title">Tip</p>
+      <p>Keep the list short. Momentum beats volume every time.</p>
+    </div>
+  </section>
+</main>
