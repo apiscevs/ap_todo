@@ -15,8 +15,7 @@ docker compose up -d   # Postgres + Redis
 dotnet run             # API at http://localhost:5148
 ```
 
-GraphQL endpoint: `http://localhost:5148/graphql`  
-Banana Cake Pop (dev): `http://localhost:5148/graphql/ui`  
+GraphQL endpoint: `http://localhost:5148/graphql` (Banana Cake Pop UI served at the same path in dev)  
 REST endpoints remain for legacy clients at `/api/todos`.
 
 Run with Aspire (brings up API + infra):

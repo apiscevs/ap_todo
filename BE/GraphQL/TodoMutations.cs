@@ -11,10 +11,9 @@ public class TodoMutations
 {
     public async Task<TodoItem> CreateTodo(
         TodoCreateInput input,
-        [Service] IDbContextFactory<TodoDbContext> dbFactory,
+        [Service] TodoDbContext db,
         [Service] IDistributedCache cache)
     {
-        await using var db = await dbFactory.CreateDbContextAsync();
         var todo = new TodoItem
         {
             Id = Guid.NewGuid(),
@@ -34,10 +33,9 @@ public class TodoMutations
     public async Task<TodoItem> UpdateTodo(
         Guid id,
         TodoUpdateInput input,
-        [Service] IDbContextFactory<TodoDbContext> dbFactory,
+        [Service] TodoDbContext db,
         [Service] IDistributedCache cache)
     {
-        await using var db = await dbFactory.CreateDbContextAsync();
         var todo = await db.Todos.FirstOrDefaultAsync(todo => todo.Id == id);
         if (todo is null)
         {
@@ -62,10 +60,9 @@ public class TodoMutations
 
     public async Task<bool> DeleteTodo(
         Guid id,
-        [Service] IDbContextFactory<TodoDbContext> dbFactory,
+        [Service] TodoDbContext db,
         [Service] IDistributedCache cache)
     {
-        await using var db = await dbFactory.CreateDbContextAsync();
         var todo = await db.Todos.FirstOrDefaultAsync(todo => todo.Id == id);
         if (todo is null)
         {
@@ -79,10 +76,9 @@ public class TodoMutations
     }
 
     public async Task<int> DeleteCompletedTodos(
-        [Service] IDbContextFactory<TodoDbContext> dbFactory,
+        [Service] TodoDbContext db,
         [Service] IDistributedCache cache)
     {
-        await using var db = await dbFactory.CreateDbContextAsync();
         var completed = await db.Todos.Where(todo => todo.IsCompleted).ToListAsync();
         if (completed.Count == 0)
         {

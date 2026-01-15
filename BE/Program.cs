@@ -4,6 +4,8 @@ using BE.Models;
 using HotChocolate.AspNetCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
+using System.Net.Sockets;
 using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,8 +21,6 @@ if (string.IsNullOrWhiteSpace(todoDbConnection))
 }
 
 builder.Services.AddDbContext<TodoDbContext>(options =>
-    options.UseNpgsql(todoDbConnection));
-builder.Services.AddPooledDbContextFactory<TodoDbContext>(options =>
     options.UseNpgsql(todoDbConnection));
 
 var redisConnection = builder.Configuration.GetConnectionString("Redis")
@@ -77,11 +77,7 @@ graphQlEndpoint.WithOptions(new GraphQLServerOptions
     }
 });
 
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<TodoDbContext>();
-    db.Database.EnsureCreated();
-}
+await EnsureDatabaseReadyAsync(app.Services, app.Logger, app.Lifetime.ApplicationStopping);
 
 var todos = app.MapGroup("/api/todos");
 
@@ -185,6 +181,55 @@ todos.MapDelete("/completed", async (TodoDbContext db, IDistributedCache cache) 
 });
 
 app.Run();
+
+static async Task EnsureDatabaseReadyAsync(
+    IServiceProvider services,
+    ILogger logger,
+    CancellationToken cancellationToken)
+{
+    const int maxAttempts = 10;
+    var delay = TimeSpan.FromSeconds(1);
+
+    for (var attempt = 1; attempt <= maxAttempts; attempt++)
+    {
+        try
+        {
+            using var scope = services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<TodoDbContext>();
+            await db.Database.EnsureCreatedAsync(cancellationToken);
+            return;
+        }
+        catch (Exception ex) when (IsTransientDatabaseException(ex))
+        {
+            logger.LogWarning(
+                ex,
+                "Database not ready yet (attempt {Attempt}/{MaxAttempts}). Retrying in {Delay}s.",
+                attempt,
+                maxAttempts,
+                delay.TotalSeconds);
+
+            if (attempt == maxAttempts)
+            {
+                logger.LogWarning("Database initialization skipped after retries.");
+                return;
+            }
+
+            await Task.Delay(delay, cancellationToken);
+            delay = TimeSpan.FromSeconds(Math.Min(delay.TotalSeconds * 2, 10));
+        }
+    }
+}
+
+static bool IsTransientDatabaseException(Exception ex)
+{
+    if (ex is NpgsqlException)
+    {
+        return true;
+    }
+
+    var baseException = ex.GetBaseException();
+    return baseException is SocketException;
+}
 
 record TodoCreateRequest(string Title, bool IsCompleted);
 

@@ -8,12 +8,10 @@ namespace BE.GraphQL;
 public class TodoQueries
 {
     public async Task<IReadOnlyList<TodoItem>> GetTodos(
-        [Service] IDbContextFactory<TodoDbContext> dbFactory,
+        [Service] TodoDbContext db,
         bool? isCompleted,
         string? search)
     {
-        await using var db = await dbFactory.CreateDbContextAsync();
-
         var query = db.Todos.AsNoTracking().AsQueryable();
 
         if (isCompleted.HasValue)
@@ -33,9 +31,8 @@ public class TodoQueries
 
     public async Task<TodoItem?> GetTodo(
         Guid id,
-        [Service] IDbContextFactory<TodoDbContext> dbFactory)
+        [Service] TodoDbContext db)
     {
-        await using var db = await dbFactory.CreateDbContextAsync();
         return await db.Todos.AsNoTracking().FirstOrDefaultAsync(todo => todo.Id == id);
     }
 }

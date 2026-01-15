@@ -31,7 +31,7 @@ Aspire starts Postgres, Redis, the API, and the telemetry dashboard.
 ## GraphQL (preferred)
 
 - Endpoint: `http://localhost:5148/graphql`
-- Banana Cake Pop IDE (Development): `http://localhost:5148/graphql/ui`
+- Banana Cake Pop IDE (Development): open `http://localhost:5148/graphql` in a browser (the tool is served at the same path)
 
 ### Sample queries
 
