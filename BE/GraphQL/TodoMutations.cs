@@ -2,6 +2,7 @@ using BE.Data;
 using BE.Models;
 using HotChocolate;
 using HotChocolate.Execution;
+using HotChocolate.Types;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 
@@ -31,7 +32,7 @@ public class TodoMutations
     }
 
     public async Task<TodoItem> UpdateTodo(
-        Guid id,
+        [GraphQLType(typeof(UuidType))] Guid id,
         TodoUpdateInput input,
         [Service] TodoDbContext db,
         [Service] IDistributedCache cache)
@@ -59,7 +60,7 @@ public class TodoMutations
     }
 
     public async Task<bool> DeleteTodo(
-        Guid id,
+        [GraphQLType(typeof(UuidType))] Guid id,
         [Service] TodoDbContext db,
         [Service] IDistributedCache cache)
     {

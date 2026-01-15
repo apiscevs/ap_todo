@@ -1,6 +1,7 @@
 using BE.Data;
 using BE.Models;
 using HotChocolate;
+using HotChocolate.Types;
 using Microsoft.EntityFrameworkCore;
 
 namespace BE.GraphQL;
@@ -30,7 +31,7 @@ public class TodoQueries
     }
 
     public async Task<TodoItem?> GetTodo(
-        Guid id,
+        [GraphQLType(typeof(UuidType))] Guid id,
         [Service] TodoDbContext db)
     {
         return await db.Todos.AsNoTracking().FirstOrDefaultAsync(todo => todo.Id == id);

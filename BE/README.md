@@ -46,7 +46,7 @@ query AllTodos($done: Boolean, $search: String) {
   }
 }
 
-query SingleTodo($id: ID!) {
+query SingleTodo($id: UUID!) {
   todo(id: $id) {
     id
     title
@@ -66,7 +66,7 @@ mutation CreateTodo($input: TodoCreateInput!) {
   }
 }
 
-mutation UpdateTodo($id: ID!, $input: TodoUpdateInput!) {
+mutation UpdateTodo($id: UUID!, $input: TodoUpdateInput!) {
   updateTodo(id: $id, input: $input) {
     id
     title
@@ -74,7 +74,7 @@ mutation UpdateTodo($id: ID!, $input: TodoUpdateInput!) {
   }
 }
 
-mutation DeleteTodo($id: ID!) {
+mutation DeleteTodo($id: UUID!) {
   deleteTodo(id: $id)
 }
 

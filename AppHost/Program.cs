@@ -2,7 +2,8 @@ using Aspire.Hosting.ApplicationModel;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-var postgres = builder.AddPostgres("postgres", port: 5400);
+var postgres = builder.AddPostgres("postgres", port: 5400)
+    .WithDataVolume("ap_todo_postgres");
 var todoDb = postgres.AddDatabase("TodoDb");
 
 var redis = builder.AddRedis("Redis");
