@@ -1,6 +1,6 @@
 # Todo Backend (.NET 9 + Postgres + GraphQL)
 
-A minimal .NET 9 Web API for Todo items backed by PostgreSQL via EF Core. REST endpoints remain available for legacy clients; GraphQL is the primary API going forward.
+A minimal .NET 9 Web API for Todo items backed by PostgreSQL via EF Core.
 
 ## Prerequisites
 
@@ -28,7 +28,7 @@ dotnet run
 
 Aspire starts Postgres, Redis, the API, and the telemetry dashboard.
 
-## GraphQL (preferred)
+## GraphQL
 
 - Endpoint: `http://localhost:5148/graphql`
 - Banana Cake Pop IDE (Development): open `http://localhost:5148/graphql` in a browser (the tool is served at the same path)
@@ -81,23 +81,6 @@ mutation DeleteTodo($id: UUID!) {
 mutation DeleteCompleted {
   deleteCompletedTodos
 }
-```
-
-## REST (legacy)
-
-- `GET /api/todos`
-- `GET /api/todos/{id}`
-- `POST /api/todos`
-- `PUT /api/todos/{id}`
-- `DELETE /api/todos`
-- `DELETE /api/todos/completed`
-
-### Request example
-
-```bash
-curl -X POST http://localhost:5148/api/todos \
-  -H "Content-Type: application/json" \
-  -d '{"title":"Ship the backend","isCompleted":false}'
 ```
 
 ## Notes

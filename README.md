@@ -1,6 +1,6 @@
 # ap_todo
 
-Full-stack Todo app with a .NET 9 backend (Postgres/Redis, REST + GraphQL) and Angular frontend.
+Full-stack Todo app with a .NET 9 backend (Postgres/Redis, GraphQL) and Angular frontend.
 
 ## Structure
 
@@ -15,8 +15,7 @@ docker compose up -d   # Postgres + Redis
 dotnet run             # API at http://localhost:5148
 ```
 
-GraphQL endpoint: `http://localhost:5148/graphql` (Banana Cake Pop UI served at the same path in dev)  
-REST endpoints remain for legacy clients at `/api/todos`.
+GraphQL endpoint: `http://localhost:5148/graphql` (Banana Cake Pop UI served at the same path in dev)
 
 Run with Aspire (brings up API + infra):
 

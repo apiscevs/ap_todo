@@ -4,7 +4,6 @@ using HotChocolate;
 using HotChocolate.Execution;
 using HotChocolate.Types;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Distributed;
 
 namespace BE.GraphQL;
 
@@ -12,8 +11,7 @@ public class TodoMutations
 {
     public async Task<TodoItem> CreateTodo(
         TodoCreateInput input,
-        [Service] TodoDbContext db,
-        [Service] IDistributedCache cache)
+        [Service] TodoDbContext db)
     {
         var todo = new TodoItem
         {
@@ -26,7 +24,6 @@ public class TodoMutations
 
         db.Todos.Add(todo);
         await db.SaveChangesAsync();
-        await cache.RemoveAsync(CacheKeys.Todos);
 
         return todo;
     }
@@ -34,8 +31,7 @@ public class TodoMutations
     public async Task<TodoItem> UpdateTodo(
         [GraphQLType(typeof(UuidType))] Guid id,
         TodoUpdateInput input,
-        [Service] TodoDbContext db,
-        [Service] IDistributedCache cache)
+        [Service] TodoDbContext db)
     {
         var todo = await db.Todos.FirstOrDefaultAsync(todo => todo.Id == id);
         if (todo is null)
@@ -55,14 +51,12 @@ public class TodoMutations
         }
 
         await db.SaveChangesAsync();
-        await cache.RemoveAsync(CacheKeys.Todos);
         return todo;
     }
 
     public async Task<bool> DeleteTodo(
         [GraphQLType(typeof(UuidType))] Guid id,
-        [Service] TodoDbContext db,
-        [Service] IDistributedCache cache)
+        [Service] TodoDbContext db)
     {
         var todo = await db.Todos.FirstOrDefaultAsync(todo => todo.Id == id);
         if (todo is null)
@@ -72,13 +66,11 @@ public class TodoMutations
 
         db.Todos.Remove(todo);
         await db.SaveChangesAsync();
-        await cache.RemoveAsync(CacheKeys.Todos);
         return true;
     }
 
     public async Task<int> DeleteCompletedTodos(
-        [Service] TodoDbContext db,
-        [Service] IDistributedCache cache)
+        [Service] TodoDbContext db)
     {
         var completed = await db.Todos.Where(todo => todo.IsCompleted).ToListAsync();
         if (completed.Count == 0)
@@ -88,7 +80,6 @@ public class TodoMutations
 
         db.Todos.RemoveRange(completed);
         await db.SaveChangesAsync();
-        await cache.RemoveAsync(CacheKeys.Todos);
         return completed.Count;
     }
 
