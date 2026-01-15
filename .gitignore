@@ -1,0 +1,39 @@
+# Solution
+*.user
+*.suo
+*.userprefs
+*.csproj.user
+*.DotSettings.user
+.idea/
+.vs/
+.vscode/
+.DS_Store
+.venv/
+
+# Build outputs
+bin/
+obj/
+/AppHost/bin/
+/AppHost/obj/
+/BE/bin/
+/BE/obj/
+/ServiceDefaults/bin/
+/ServiceDefaults/obj/
+
+# Logs
+*.log
+
+# Angular / Node
+node_modules/
+todo-app/.angular/
+todo-app/dist/
+todo-app/coverage/
+todo-app/npm-debug.log*
+todo-app/package-lock.json
+
+# Rider/JetBrains caches
+.idea/.idea.ap_todo/
+.idea/.idea.BE.dir/
+
+# Tooling artifacts
+*.sourcelink.json

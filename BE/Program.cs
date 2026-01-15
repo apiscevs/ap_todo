@@ -1,5 +1,7 @@
 using BE.Data;
+using BE.GraphQL;
 using BE.Models;
+using HotChocolate.AspNetCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
@@ -17,6 +19,8 @@ if (string.IsNullOrWhiteSpace(todoDbConnection))
 }
 
 builder.Services.AddDbContext<TodoDbContext>(options =>
+    options.UseNpgsql(todoDbConnection));
+builder.Services.AddPooledDbContextFactory<TodoDbContext>(options =>
     options.UseNpgsql(todoDbConnection));
 
 var redisConnection = builder.Configuration.GetConnectionString("Redis")
@@ -42,6 +46,12 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddGraphQLServer()
+    .AddQueryType<TodoQueries>()
+    .AddMutationType<TodoMutations>()
+    .AddFiltering()
+    .AddSorting();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -56,6 +66,16 @@ if (app.Environment.IsProduction())
 app.UseCors("ui");
 
 app.MapDefaultEndpoints();
+var graphQlEndpoint = app.MapGraphQL("/graphql");
+graphQlEndpoint.WithOptions(new GraphQLServerOptions
+{
+    Tool =
+    {
+        Enable = app.Environment.IsDevelopment(),
+        ServeMode = GraphQLToolServeMode.Embedded,
+        GraphQLEndpoint = "/graphql"
+    }
+});
 
 using (var scope = app.Services.CreateScope())
 {
@@ -70,7 +90,7 @@ var cacheOptions = new DistributedCacheEntryOptions
     AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(30)
 };
 var cacheJsonOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
-const string TodosCacheKey = "todos:all";
+const string TodosCacheKey = CacheKeys.Todos;
 
 todos.MapGet("/", async (TodoDbContext db, IDistributedCache cache) =>
 {

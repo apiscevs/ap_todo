@@ -1,29 +1,23 @@
-# Todo Backend (.NET 9 + Postgres)
+# Todo Backend (.NET 9 + Postgres + GraphQL)
 
-A minimal .NET 9 Web API for Todo items backed by PostgreSQL via EF Core.
+A minimal .NET 9 Web API for Todo items backed by PostgreSQL via EF Core. REST endpoints remain available for legacy clients; GraphQL is the primary API going forward.
 
 ## Prerequisites
 
 - .NET SDK 9.x
 - Docker Desktop (or compatible Docker engine)
 
-## Run Postgres
+## Run with Docker-compose
 
 ```bash
 cd /Users/aleksejspiscevs/ap_todo/BE
 docker compose up -d
+dotnet run
 ```
 
 Postgres runs on `localhost:5400`. Redis runs on `localhost:6379`.
 
-## Run the API
-
-```bash
-cd /Users/aleksejspiscevs/ap_todo/BE
-dotnet run
-```
-
-Default URL (dev): `http://localhost:5148`
+Default API URL (dev): `http://localhost:5148`
 
 ## Run with .NET Aspire
 
@@ -32,9 +26,64 @@ cd /Users/aleksejspiscevs/ap_todo/AppHost
 dotnet run
 ```
 
-Aspire will start Postgres, Redis, the API, and the telemetry dashboard.
+Aspire starts Postgres, Redis, the API, and the telemetry dashboard.
 
-## Endpoints
+## GraphQL (preferred)
+
+- Endpoint: `http://localhost:5148/graphql`
+- Banana Cake Pop IDE (Development): `http://localhost:5148/graphql/ui`
+
+### Sample queries
+
+```graphql
+query AllTodos($done: Boolean, $search: String) {
+  todos(isCompleted: $done, search: $search) {
+    id
+    title
+    isCompleted
+    createdAt
+    completedAt
+  }
+}
+
+query SingleTodo($id: ID!) {
+  todo(id: $id) {
+    id
+    title
+    isCompleted
+  }
+}
+```
+
+### Sample mutations
+
+```graphql
+mutation CreateTodo($input: TodoCreateInput!) {
+  createTodo(input: $input) {
+    id
+    title
+    isCompleted
+  }
+}
+
+mutation UpdateTodo($id: ID!, $input: TodoUpdateInput!) {
+  updateTodo(id: $id, input: $input) {
+    id
+    title
+    isCompleted
+  }
+}
+
+mutation DeleteTodo($id: ID!) {
+  deleteTodo(id: $id)
+}
+
+mutation DeleteCompleted {
+  deleteCompletedTodos
+}
+```
+
+## REST (legacy)
 
 - `GET /api/todos`
 - `GET /api/todos/{id}`
@@ -43,7 +92,7 @@ Aspire will start Postgres, Redis, the API, and the telemetry dashboard.
 - `DELETE /api/todos`
 - `DELETE /api/todos/completed`
 
-### Request examples
+### Request example
 
 ```bash
 curl -X POST http://localhost:5148/api/todos \
