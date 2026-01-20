@@ -3,6 +3,7 @@ using BE.GraphQL;
 using HotChocolate.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
+using StackExchange.Redis;
 using System.Net.Sockets;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,7 +20,22 @@ if (string.IsNullOrWhiteSpace(todoDbConnection))
 builder.Services.AddDbContext<TodoDbContext>(options =>
     options.UseNpgsql(todoDbConnection));
 
-builder.Services.AddDistributedMemoryCache();
+var redisConnection = builder.Configuration.GetConnectionString("redis");
+if (!string.IsNullOrWhiteSpace(redisConnection))
+{
+    var redisOptions = ConfigurationOptions.Parse(redisConnection);
+    redisOptions.Ssl = true;
+    redisOptions.AbortOnConnectFail = false;
+
+    builder.Services.AddStackExchangeRedisCache(options =>
+    {
+        options.ConfigurationOptions = redisOptions;
+    });
+}
+else
+{
+    builder.Services.AddDistributedMemoryCache();
+}
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("ui", policy =>
