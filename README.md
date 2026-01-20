@@ -1,6 +1,6 @@
 # ap_todo
 
-Full-stack Todo app with a .NET 9 backend (Postgres/Redis, GraphQL) and Angular frontend.
+Full-stack Todo app with a .NET 10 backend (Postgres, GraphQL) and Angular frontend.
 
 ## Structure
 
@@ -11,7 +11,7 @@ Full-stack Todo app with a .NET 9 backend (Postgres/Redis, GraphQL) and Angular 
 
 ```bash
 cd BE
-docker compose up -d   # Postgres + Redis
+docker compose up -d   # Postgres
 dotnet run             # API at http://localhost:5148
 ```
 

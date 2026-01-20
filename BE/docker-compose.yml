@@ -15,13 +15,5 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
-  redis:
-    image: redis:7
-    container_name: todo-redis
-    ports:
-      - "6379:6379"
-    volumes:
-      - todo_redis_data:/data
 volumes:
   todo_pg_data:
-  todo_redis_data:

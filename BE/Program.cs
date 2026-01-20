@@ -19,19 +19,7 @@ if (string.IsNullOrWhiteSpace(todoDbConnection))
 builder.Services.AddDbContext<TodoDbContext>(options =>
     options.UseNpgsql(todoDbConnection));
 
-var redisConnection = builder.Configuration.GetConnectionString("Redis")
-    ?? builder.Configuration.GetConnectionString("redis");
-if (!string.IsNullOrWhiteSpace(redisConnection))
-{
-    builder.Services.AddStackExchangeRedisCache(options =>
-    {
-        options.Configuration = redisConnection;
-    });
-}
-else
-{
-    builder.Services.AddDistributedMemoryCache();
-}
+builder.Services.AddDistributedMemoryCache();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("ui", policy =>

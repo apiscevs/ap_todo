@@ -1,10 +1,10 @@
-# Todo Backend (.NET 9 + Postgres + GraphQL)
+# Todo Backend (.NET 10 + Postgres + GraphQL)
 
-A minimal .NET 9 Web API for Todo items backed by PostgreSQL via EF Core.
+A minimal .NET 10 Web API for Todo items backed by PostgreSQL via EF Core.
 
 ## Prerequisites
 
-- .NET SDK 9.x
+- .NET SDK 10.x
 - Docker Desktop (or compatible Docker engine)
 
 ## Run with Docker-compose
@@ -15,7 +15,7 @@ docker compose up -d
 dotnet run
 ```
 
-Postgres runs on `localhost:5400`. Redis runs on `localhost:6379`.
+Postgres runs on `localhost:5400`.
 
 Default API URL (dev): `http://localhost:5148`
 
@@ -26,7 +26,7 @@ cd /Users/aleksejspiscevs/ap_todo/AppHost
 dotnet run
 ```
 
-Aspire starts Postgres, Redis, the API, and the telemetry dashboard.
+Aspire starts Postgres, the API, and the telemetry dashboard.
 
 ## GraphQL
 
